@@ -32,12 +32,26 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
       - name: Setup Pages
+        id: pages
         uses: actions/configure-pages@v5
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - name: Build frontend
+        working-directory: frontend
+        env:
+          VITE_PAGES_BASE: ${{ steps.pages.outputs.base_path }}
+        run: |
+          npm ci
+          npm run build
+          # Resolve assets from the Pages root on direct visits to nested routes.
+          sed "s|<head>|<head><base href=\"$VITE_PAGES_BASE/\">|" dist/index.html > dist/404.html
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          # Upload entire repository
-          path: '.'
+          path: frontend/dist
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v5

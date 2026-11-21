@@ -100,7 +100,7 @@ function App() {
   );
 }
 createRoot(document.getElementById("root")).render(
-  <BrowserRouter>
+  <BrowserRouter basename={import.meta.env.VITE_PAGES_BASE || "/"}>
     <App />
   </BrowserRouter>,
 );
